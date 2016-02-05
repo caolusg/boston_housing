@@ -49,8 +49,9 @@ def explore_city_data(city_data):
     # Calculate standard deviation?
     standard_deviation = np.std(housing_prices)
 
+    print city_data.DESCR
     print 'number of houses: ' + str(number_of_houses)
-    print 'Number of features: '+ str(number_of_features)
+    #print 'Number of features: '+ str(number_of_features)
     print 'minimum_price: ' + str(minimum_price)
     print 'Maximum price: ' + str(maximum_price)
     print 'mean price: ' + str(mean_price)
@@ -68,8 +69,8 @@ def split_data(city_data):
     ### Step 2. YOUR CODE GOES HERE ###
     ###################################
 
-    np.random.shuffle(X)
-    np.random.shuffle(y)
+    #np.random.shuffle(X)
+    #np.random.shuffle(y)
 
     X_train,X_test,y_train, y_test =train_test_split(X, y, test_size=0.3, random_state=0)
 
@@ -135,7 +136,7 @@ def model_complexity(X_train, y_train, X_test, y_test):
     print "Model Complexity: "
 
     # We will vary the depth of decision trees from 2 to 25
-    max_depth = np.arange(1, 25)
+    max_depth = np.arange(1, 10)
     train_err = np.zeros(len(max_depth))
     test_err = np.zeros(len(max_depth))
 
@@ -188,24 +189,46 @@ def fit_predict_model(city_data):
     # one used in your performance_metric procedure above:
     # http://scikit-learn.org/stable/modules/generated/sklearn.metrics.make_scorer.html
     
-    mean_squared_scorer = make_scorer(mean_squared_error)
+    mean_squared_scorer = make_scorer(mean_squared_error,greater_is_better=False)
 
+    #print "mean_squared_scorer :"
+    #print mean_squared_scorer
+    
     # 2. We will use grid search to fine tune the Decision Tree Regressor and
     # obtain the parameters that generate the best training performance. Set up
     # the grid search object here.
     # http://scikit-learn.org/stable/modules/generated/sklearn.grid_search.GridSearchCV.html#sklearn.grid_search.GridSearchCV
 
-    reg = grid_search.GridSearchCV(regressor, parameters)
+    reg = grid_search.GridSearchCV(regressor, parameters, scoring=mean_squared_scorer)
 
     # Fit the learner to the training data to obtain the best parameter set
     print "Final Model: "
     print reg.fit(X, y)
+   
+
+    
     
     # Use the model to predict the output of a particular sample
     x = [11.95, 0.00, 18.100, 0, 0.6590, 5.6090, 90.00, 1.385, 24, 680.0, 20.20, 332.09, 12.13]
     y = reg.predict(x)
     print "House: " + str(x)
     print "Prediction: " + str(y)
+    print "Best model score:  " + str( reg.best_score_)
+    print "Best model parameter:  " + str( reg.best_params_)
+    print "Best model escimators:  " + str( reg.best_estimator_)
+
+
+    grid_mean_score = [result.mean_validation_score for result in reg.grid_scores_]
+    #print "grid mean scores:  "  + str( grid_mean_score)
+
+    max_depth = range(1,11)
+    #print max_depth
+    pl.plot(max_depth,grid_mean_score)
+    pl.xlabel('Max Depth')
+    pl.ylabel('Cross-Validation Scores')
+    pl.show()
+    
+    
 
 #In the case of the documentation page for GridSearchCV, it might be the case that the example is just a demonstration of syntax for use of the function, rather than a statement about 
 def main():
