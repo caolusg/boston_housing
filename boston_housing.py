@@ -136,7 +136,7 @@ def model_complexity(X_train, y_train, X_test, y_test):
     print "Model Complexity: "
 
     # We will vary the depth of decision trees from 2 to 25
-    max_depth = np.arange(1, 10)
+    max_depth = np.arange(1, 25)
     train_err = np.zeros(len(max_depth))
     test_err = np.zeros(len(max_depth))
 
